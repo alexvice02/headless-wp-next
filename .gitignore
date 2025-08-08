@@ -3,7 +3,7 @@
 # Application
 /backend/web/app/plugins/*
 /backend/!web/app/plugins/.gitkeep
-/backend/web/app/mu-plugins/*/
+/backend/web/app/mu-plugins/bedrock-disallow-indexing/
 /backend/web/app/themes/twentytwentyfive/
 /backend/web/app/upgrade
 /backend/web/app/uploads/*
