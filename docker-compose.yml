@@ -1,5 +1,8 @@
 services:
   mysql:
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
     image: mysql:5.7
     container_name: mysql
     restart: always
