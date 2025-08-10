@@ -1,8 +1,5 @@
 services:
   mysql:
-    build:
-      context: .
-      dockerfile: ./docker/mysql/Dockerfile
     image: mysql:5.7
     container_name: mysql
     restart: always
@@ -13,6 +10,9 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
       MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+
 
   wordpress:
     build:
@@ -31,19 +31,6 @@ services:
     depends_on:
       - mysql
 
-  frontend:
-    build:
-      context: .
-      dockerfile: ./docker/frontend/Dockerfile
-    container_name: frontend
-    restart: always
-    ports:
-      - 3000:3000
-    volumes:
-      - ./app:/app
-    working_dir: /app
-    command: ["npm", "run", "dev"]
-
   nginx:
     image: nginx:latest
     container_name: nginx
@@ -55,7 +42,6 @@ services:
 
     depends_on:
       - wordpress
-      - frontend
 
 volumes:
   mysql_data:

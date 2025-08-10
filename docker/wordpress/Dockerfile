@@ -6,11 +6,12 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd pdo mysqli pdo_mysql pdo_pgsql zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-COPY ./backend /var/www/html
+COPY ./docker/wordpress/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-CMD ["composer", "install"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
