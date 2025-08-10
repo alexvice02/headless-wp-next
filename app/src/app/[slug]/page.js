@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import Navigation from "@/app/resources/components/Navigation";
+import Navigation from "@/app/resources/components/header/Navigation";
 
 const api = process.env.WP_API_URL;
 
@@ -31,7 +31,6 @@ export default async function Page({ params }) {
     }
 
     page = simplify(page);
-
 
     return (
         <>
