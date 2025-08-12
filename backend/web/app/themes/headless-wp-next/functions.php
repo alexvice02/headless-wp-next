@@ -1,12 +1,14 @@
 <?php
 
-add_theme_support('menus');
+define('HWN_VERSION', '0.1.0');
+define('THEME_URI', get_template_directory());
 
-/*
- * Register the menus
- *
-*/
-register_nav_menus( array(
-    'header_menu' => 'Header menu',
-    'footer_menu' => 'Footer menu'
-) );
+add_action( 'after_setup_theme', function() {
+    add_theme_support('menus');
+    add_theme_support('post-thumbnails');
+    add_theme_support('custom-logo');
+});
+
+
+/* Modules */
+require_once( THEME_URI . '/inc/menus.php' );
