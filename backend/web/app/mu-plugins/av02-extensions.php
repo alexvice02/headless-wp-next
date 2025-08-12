@@ -68,3 +68,4 @@ add_filter('rest_post_dispatch', function ($result, $server, $request) {
 
 /* Extensions */
 require_once __DIR__ . '/av02-extensions-menus/av02-extensions-menus.php';
+require_once __DIR__ . '/av02-extensions-posts/av02-extensions-posts.php';
