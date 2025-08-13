@@ -71,23 +71,3 @@ function get_featured_image(int $postId): ?array
     }
     return $out;
 }
-
-// Strict CORS for REST API (allow only Next origin)
-add_action('rest_api_init', function () {
-    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
-
-    add_filter('rest_pre_serve_request', function ($value) {
-        $origin = getenv('REST_ALLOWED_ORIGIN') ?: 'http://localhost:3000';
-        header('Access-Control-Allow-Origin: ' . $origin);
-        header('Vary: Origin');
-        header('Access-Control-Allow-Credentials: false');
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce');
-
-        if ('OPTIONS' === ($_SERVER['REQUEST_METHOD'] ?? 'GET')) {
-            status_header(204);
-            return true;
-        }
-        return $value;
-    });
-}, 15);
