@@ -11,5 +11,4 @@ add_action( 'after_setup_theme', function() {
 
 
 /* Modules */
-require_once( THEME_URI . '/inc/routing.php' );
 require_once( THEME_URI . '/inc/menus.php' );
