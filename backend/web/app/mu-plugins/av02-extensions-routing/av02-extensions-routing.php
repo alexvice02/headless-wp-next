@@ -118,21 +118,3 @@ function set_rest_url_prefix(): string
     return getenv('REST_API_PREFIX') ?: 'api';
 }
 add_filter('rest_url_prefix', __NAMESPACE__ . '\set_rest_url_prefix');
-
-
-/**
- * Disables the default WordPress REST API route (/wp-json).
- *
- * @param \WP $wp
- * @return void
- */
-function disable_default_api_route(\WP $wp): void
-{
-    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
-    if (preg_match('#^/wp-json(/|$)#', $request_uri)) {
-        status_header(404);
-        nocache_headers();
-        exit;
-    }
-}
-add_action('parse_request', __NAMESPACE__ . '\disable_default_api_route', 0);

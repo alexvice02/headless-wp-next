@@ -16,12 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-const AV02_EXTENSION_MENUS_ENABLED = true;
-
 function av02_integration_menus_init() {
     require_once __DIR__ . '/inc/menus.php';
 }
 
-if( AV02_EXTENSION_MENUS_ENABLED ) {
-    av02_integration_menus_init();
-}
+av02_integration_menus_init();

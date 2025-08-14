@@ -47,18 +47,35 @@ function get_menus($request)
                 return new \WP_Error('no_menu_items', 'No menu items found', ['status' => 404]);
             }
 
-            $formatted_items = array_map(function ($item) {
-                return [
+            $items_by_parent = [];
+            foreach ($menu_items as $item) {
+                $url = $item->url;
+                if (filter_var($url, FILTER_VALIDATE_URL)) {
+                    $wp_url = site_url();
+                    $next_url = getenv('NEXT_APP_URL') ?: 'http://localhost:3000';
+                    $url = str_replace($wp_url, rtrim($next_url, '/'), $url);
+                }
+
+                $formatted_item = [
                     'id' => $item->ID,
                     'title' => $item->title,
-                    'url' => $item->url,
+                    'url' => $url,
                     'target' => $item->target,
-                    'parent' => $item->menu_item_parent,
                     'order' => $item->menu_order,
+                    'children' => []
                 ];
-            }, $menu_items);
 
-            return rest_ensure_response($formatted_items);
+                if (!$item->menu_item_parent) {
+                    $items_by_parent[$item->ID] = $formatted_item;
+                } else {
+                    if (!isset($items_by_parent[$item->menu_item_parent])) {
+                        $items_by_parent[$item->menu_item_parent] = [];
+                    }
+                    $items_by_parent[$item->menu_item_parent]['children'][] = $formatted_item;
+                }
+            }
+
+            return rest_ensure_response(array_values($items_by_parent));
         }
         return new \WP_Error('location_not_found', 'Menu location not found', ['status' => 404]);
     }
@@ -81,18 +98,35 @@ function get_menu_items($request)
         return new \WP_Error('no_menu_items', 'No menu items found', ['status' => 404]);
     }
 
-    $formatted_items = array_map(function ($item) {
-        return [
+    $items_by_parent = [];
+    foreach ($menu_items as $item) {
+        $url = $item->url;
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            $wp_url = site_url();
+            $next_url = getenv('NEXT_APP_URL') ?: 'http://localhost:3000';
+            $url = str_replace($wp_url, rtrim($next_url, '/'), $url);
+        }
+
+        $formatted_item = [
             'id' => $item->ID,
             'title' => $item->title,
-            'url' => $item->url,
+            'url' => $url,
             'target' => $item->target,
-            'parent' => $item->menu_item_parent,
             'order' => $item->menu_order,
+            'children' => []
         ];
-    }, $menu_items);
 
-    return rest_ensure_response($formatted_items);
+        if (!$item->menu_item_parent) {
+            $items_by_parent[$item->ID] = $formatted_item;
+        } else {
+            if (!isset($items_by_parent[$item->menu_item_parent])) {
+                $items_by_parent[$item->menu_item_parent] = [];
+            }
+            $items_by_parent[$item->menu_item_parent]['children'][] = $formatted_item;
+        }
+    }
+
+    return rest_ensure_response(array_values($items_by_parent));
 }
 
 function get_menu_locations()
