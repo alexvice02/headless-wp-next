@@ -1,9 +1,8 @@
 import { notFound } from 'next/navigation';
 import Navigation from "@/app/resources/components/header/Navigation";
 
-const api = process.env.WP_API_URL;
-
 export async function generateStaticParams() {
+    const api = process.env.WP_API_URL;
     const pages = await fetch(`${api}/wp-json/wp/v2/pages`).then((res) => res.json());
 
     return pages.map((page) => ({
@@ -13,6 +12,7 @@ export async function generateStaticParams() {
 
 
 export default async function Page({ params }) {
+    const api = process.env.WP_API_URL;
     const res = await fetch(`${api}/wp-json/wp/v2/pages?slug=${params.slug}`, {
         next: { revalidate: 60 },
     });
