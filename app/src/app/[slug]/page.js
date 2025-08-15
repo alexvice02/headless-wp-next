@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import Navigation from "@/app/resources/components/header/Navigation";
+import SiteHeader from "@/app/resources/components/header/SiteHeader";
+import styles from "@/app/page.module.scss";
 
 export async function generateStaticParams() {
     const api = process.env.WP_API_URL;
@@ -34,13 +35,11 @@ export default async function Page({ params }) {
 
     return (
         <>
-            <header>
-                <Navigation />
-            </header>
-            <main>
+            <SiteHeader></SiteHeader>
+            <main className={styles.main}>
                 <div className={'container'} style={{ maxWidth: '1000px', margin: '0 auto' }}>
-                    <h1>{ page.title }</h1>
-                    <div dangerouslySetInnerHTML={{ __html: page.content }} />
+                    <h1 className={styles.pageTitle}>{ page.title }</h1>
+                    <div className={styles.pageContent} dangerouslySetInnerHTML={{ __html: page.content }} />
                 </div>
             </main>
         </>
