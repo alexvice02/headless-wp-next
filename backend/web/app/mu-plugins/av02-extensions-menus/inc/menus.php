@@ -35,6 +35,52 @@ add_action('rest_api_init', function () {
     ]);
 });
 
+function format_menu_items($menu_items)
+{
+    if (empty($menu_items)) {
+        return new \WP_Error('no_menu_items', 'No menu items found', ['status' => 404]);
+    }
+
+    $items_by_parent = [];
+    foreach ($menu_items as $item) {
+        $url = $item->url;
+        $wp_url = site_url();
+        $next_url = getenv('NEXT_APP_URL') ?: 'http://localhost:3000';
+        $next_url = rtrim($next_url, '/');
+        $parsed_wp = parse_url($wp_url, PHP_URL_HOST);
+
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            $parsed_url_host = parse_url($url, PHP_URL_HOST);
+            if ($parsed_url_host === $parsed_wp) {
+                $path = parse_url($url, PHP_URL_PATH) ?: '';
+                $url = $next_url . $path;
+            }
+        }
+
+        $formatted_item = [
+            'id' => $item->ID,
+            'title' => $item->title,
+            'url' => $url,
+            'target' => $item->target,
+            'order' => $item->menu_order,
+            'children' => [],
+            'next_url' => $next_url,
+            'is_url' => filter_var($url, FILTER_VALIDATE_URL)
+        ];
+
+        if (!$item->menu_item_parent) {
+            $items_by_parent[$item->ID] = $formatted_item;
+        } else {
+            if (!isset($items_by_parent[$item->menu_item_parent])) {
+                $items_by_parent[$item->menu_item_parent] = [];
+            }
+            $items_by_parent[$item->menu_item_parent]['children'][] = $formatted_item;
+        }
+    }
+
+    return rest_ensure_response(array_values($items_by_parent));
+}
+
 function get_menus($request)
 {
     if (!empty($request['location'])) {
@@ -42,40 +88,7 @@ function get_menus($request)
         if (isset($locations[$request['location']])) {
             $menu_id = $locations[$request['location']];
             $menu_items = wp_get_nav_menu_items($menu_id);
-
-            if (empty($menu_items)) {
-                return new \WP_Error('no_menu_items', 'No menu items found', ['status' => 404]);
-            }
-
-            $items_by_parent = [];
-            foreach ($menu_items as $item) {
-                $url = $item->url;
-                if (filter_var($url, FILTER_VALIDATE_URL)) {
-                    $wp_url = site_url();
-                    $next_url = getenv('NEXT_APP_URL') ?: 'http://localhost:3000';
-                    $url = str_replace($wp_url, rtrim($next_url, '/'), $url);
-                }
-
-                $formatted_item = [
-                    'id' => $item->ID,
-                    'title' => $item->title,
-                    'url' => $url,
-                    'target' => $item->target,
-                    'order' => $item->menu_order,
-                    'children' => []
-                ];
-
-                if (!$item->menu_item_parent) {
-                    $items_by_parent[$item->ID] = $formatted_item;
-                } else {
-                    if (!isset($items_by_parent[$item->menu_item_parent])) {
-                        $items_by_parent[$item->menu_item_parent] = [];
-                    }
-                    $items_by_parent[$item->menu_item_parent]['children'][] = $formatted_item;
-                }
-            }
-
-            return rest_ensure_response(array_values($items_by_parent));
+            return format_menu_items($menu_items);
         }
         return new \WP_Error('location_not_found', 'Menu location not found', ['status' => 404]);
     }
@@ -93,40 +106,7 @@ function get_menu_items($request)
 {
     $menu_id = $request['id'];
     $menu_items = wp_get_nav_menu_items($menu_id);
-
-    if (empty($menu_items)) {
-        return new \WP_Error('no_menu_items', 'No menu items found', ['status' => 404]);
-    }
-
-    $items_by_parent = [];
-    foreach ($menu_items as $item) {
-        $url = $item->url;
-        if (filter_var($url, FILTER_VALIDATE_URL)) {
-            $wp_url = site_url();
-            $next_url = getenv('NEXT_APP_URL') ?: 'http://localhost:3000';
-            $url = str_replace($wp_url, rtrim($next_url, '/'), $url);
-        }
-
-        $formatted_item = [
-            'id' => $item->ID,
-            'title' => $item->title,
-            'url' => $url,
-            'target' => $item->target,
-            'order' => $item->menu_order,
-            'children' => []
-        ];
-
-        if (!$item->menu_item_parent) {
-            $items_by_parent[$item->ID] = $formatted_item;
-        } else {
-            if (!isset($items_by_parent[$item->menu_item_parent])) {
-                $items_by_parent[$item->menu_item_parent] = [];
-            }
-            $items_by_parent[$item->menu_item_parent]['children'][] = $formatted_item;
-        }
-    }
-
-    return rest_ensure_response(array_values($items_by_parent));
+    return format_menu_items($menu_items);
 }
 
 function get_menu_locations()
