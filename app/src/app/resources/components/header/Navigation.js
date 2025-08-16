@@ -1,10 +1,10 @@
 import Link from "next/link";
 
-export default async function Navigation() {
+export default async function Navigation({ menuLocation = 'header_menu' }) {
     const api = process.env.WP_API_URL;
 
     let params = new URLSearchParams({
-        'location': 'header_menu'
+        'location': menuLocation
     });
 
     const res = await fetch(`${api}/wp-json/av02/v1/menus?${params.toString()}`, {
