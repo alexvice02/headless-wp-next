@@ -1,6 +1,6 @@
 <?php
 
-define('HWN_VERSION', '0.1.0');
+define('HWN_VERSION', '0.2.0');
 define('THEME_URI', get_template_directory());
 
 add_action( 'after_setup_theme', function() {

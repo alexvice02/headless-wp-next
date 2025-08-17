@@ -1,0 +1,35 @@
+.hwn-admin .hwn-section {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #dcdcde;
+    border-top: none;
+}
+
+.hwn-admin .hwn-field {
+    margin-bottom: 20px;
+}
+
+.hwn-admin .hwn-label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.hwn-admin .hwn-repeater-wrapper {
+    margin-bottom: 10px;
+}
+
+.hwn-admin .repeater-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.hwn-admin .repeater-item input {
+    flex: 1;
+}
+
+.hwn-admin .add-item {
+    margin-top: 5px;
+}
