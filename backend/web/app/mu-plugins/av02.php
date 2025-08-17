@@ -2,7 +2,7 @@
 /*
 Plugin Name: WP Headless
 Plugin URI: https://github.com/alexvice02/headless-wp-next/
-Version: 0.2.0
+Version: 0.2.1
 Author: alexvice02
 Author URI: https://github.com/alexvice02
 Text Domain: hwn

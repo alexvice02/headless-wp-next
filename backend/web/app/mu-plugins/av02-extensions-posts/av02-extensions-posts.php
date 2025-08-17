@@ -3,7 +3,7 @@
  * Plugin Name: WP Headless - REST Extensions
  * Description: Extra REST fields, route resolver, preview, and CORS for headless setup.
  * Author: alexvice02
- * Version: 0.2.0
+ * Version: 0.2.1
  */
 
 namespace AV02\Extensions\Posts;
