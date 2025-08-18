@@ -60,14 +60,14 @@ class Av02Settings
                                 'title' => 'Visibility',
                                 'icon' => '',
                                 'fields' => [
-                                    ['id' => 'api_posts_show_private', 'label' => 'Show private', 'type' => 'checkbox'],
+                                    ['id' => 'api_posts_show_private', 'label' => 'Show private', 'type' => 'checkbox']
                                 ],
                             ],
                             [
                                 'title' => 'Additional',
                                 'icon' => '',
                                 'fields' => [
-                                    ['id' => 'api_posts_per_page', 'label' => 'Per page', 'type' => 'text'],
+
                                 ],
                             ],
                         ],
@@ -98,13 +98,13 @@ class Av02Settings
     public function add_menu(): void
     {
         add_menu_page(
-                'Headless WP Next',
-                'Headless WP Next',
-                'manage_options',
-                'headless-wp-next',
-                [$this, 'settings_page'],
-                'dashicons-admin-generic',
-                25
+            'Headless WP Next',
+            'Headless WP Next',
+            'manage_options',
+            'headless-wp-next',
+            [$this, 'settings_page'],
+            'dashicons-admin-generic',
+            25
         );
     }
 
