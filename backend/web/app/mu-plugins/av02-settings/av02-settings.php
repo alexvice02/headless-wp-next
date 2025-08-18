@@ -16,41 +16,78 @@ class Av02Settings
     public function __construct()
     {
         $this->sections = [
-                'general' => [
-                        'title' => 'General',
-                        'fields' => [
-                                ['id' => 'text_field', 'label' => 'Text field', 'type' => 'text'],
-                                ['id' => 'checkbox_field', 'label' => 'Checkbox', 'type' => 'checkbox'],
-                        ]
+            'general' => [
+                'title' => 'General',
+                'icon' => 'dashicons-admin-generic',
+                'fields' => [
+                    ['id' => 'text_field', 'label' => 'Text field', 'type' => 'text'],
+                    ['id' => 'checkbox_field', 'label' => 'Checkbox', 'type' => 'checkbox'],
                 ],
-                'advanced' => [
-                        'title' => 'Advanced',
+                'blocks' => [
+                    [
+                        'title' => 'Basics',
+                        'icon' => '🧩',
                         'fields' => [
-                                ['id' => 'select_field', 'label' => 'Select', 'type' => 'select', 'options' => [
-                                        'one' => 'Option 1',
-                                        'two' => 'Option 2',
-                                        'three' => 'Option 3'
-                                ]],
-                                ['id' => 'repeater_field', 'label' => 'Repeater', 'type' => 'repeater'],
-                        ]
-                ],
-                'api' => [
-                        'title' => 'API',
-                        'tabs' => [
-                                'posts' => [
-                                        'title' => 'Posts',
-                                        'fields' => [
-                                                ['id' => 'api_posts_include_meta', 'label' => 'Include meta', 'type' => 'checkbox']
-                                        ],
-                                ],
-                                'menus' => [
-                                        'title' => 'Menus',
-                                        'fields' => [
-                                                ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox']
-                                        ],
-                                ]
+                            ['id' => 'general_basic_note', 'label' => 'Note', 'type' => 'text'],
                         ],
+                    ],
                 ],
+            ],
+            'advanced' => [
+                'title' => 'Advanced',
+                'icon' => 'dashicons-admin-tools',
+                'fields' => [
+                    ['id' => 'select_field', 'label' => 'Select', 'type' => 'select', 'options' => [
+                        'one' => 'Option 1',
+                        'two' => 'Option 2',
+                        'three' => 'Option 3'
+                    ]],
+                    ['id' => 'repeater_field', 'label' => 'Repeater', 'type' => 'repeater'],
+                ]
+            ],
+            'api' => [
+                'title' => 'API',
+                'icon' => 'dashicons-rest-api',
+                'tabs' => [
+                    'posts' => [
+                        'title' => 'Posts',
+                        'icon' => 'dashicons-admin-post',
+                        'fields' => [
+                            ['id' => 'api_posts_include_meta', 'label' => 'Include meta', 'type' => 'checkbox']
+                        ],
+                        'blocks' => [
+                            [
+                                'title' => 'Visibility',
+                                'icon' => '',
+                                'fields' => [
+                                    ['id' => 'api_posts_show_private', 'label' => 'Show private', 'type' => 'checkbox'],
+                                ],
+                            ],
+                            [
+                                'title' => 'Additional',
+                                'icon' => '',
+                                'fields' => [
+                                    ['id' => 'api_posts_per_page', 'label' => 'Per page', 'type' => 'text'],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'menus' => [
+                        'title' => 'Menus',
+                        'icon' => 'dashicons-menu',
+                        'fields' => [
+                            ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox']
+                        ],
+                    ]
+                ],
+            ],
+            'integrations' => [
+                'title' => 'Integrations',
+                'icon' => 'dashicons-admin-plugins',
+                'fields' => [
+
+                ]
+            ]
         ];
 
         add_action('admin_menu', [$this, 'add_menu']);
@@ -135,7 +172,6 @@ class Av02Settings
         return $output;
     }
 
-
     private function collect_all_fields(array $sections): array
     {
         $out = [];
@@ -143,10 +179,24 @@ class Av02Settings
             if (!empty($section['fields'])) {
                 $out = array_merge($out, $section['fields']);
             }
+            if (!empty($section['blocks']) && is_array($section['blocks'])) {
+                foreach ($section['blocks'] as $block) {
+                    if (!empty($block['fields'])) {
+                        $out = array_merge($out, $block['fields']);
+                    }
+                }
+            }
             if (!empty($section['tabs']) && is_array($section['tabs'])) {
                 foreach ($section['tabs'] as $tab) {
                     if (!empty($tab['fields'])) {
                         $out = array_merge($out, $tab['fields']);
+                    }
+                    if (!empty($tab['blocks']) && is_array($tab['blocks'])) {
+                        foreach ($tab['blocks'] as $block) {
+                            if (!empty($block['fields'])) {
+                                $out = array_merge($out, $block['fields']);
+                            }
+                        }
                     }
                 }
             }
@@ -167,16 +217,16 @@ class Av02Settings
 
         switch ($field['type']) {
             case 'text':
-                echo "<input type='text' name='{$this->option_key}[{$id}]' value='" . esc_attr($val) . "' class='regular-text' />";
+                echo "<input type='text' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='" . esc_attr($val) . "' class='regular-text' />";
                 break;
 
             case 'checkbox':
                 $checked = !empty($val) ? 'checked' : '';
-                echo "<label><input type='checkbox' name='{$this->option_key}[{$id}]' value='1' $checked> " . esc_html($field['label']) . "</label>";
+                echo "<label><input type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='1' $checked> " . esc_html($field['label']) . "</label>";
                 break;
 
             case 'select':
-                echo "<select name='{$this->option_key}[{$id}]'>";
+                echo "<select name='" . esc_attr("{$this->option_key}[{$id}]") . "'>";
                 foreach (($field['options'] ?? []) as $k => $label) {
                     $selected = selected($val, $k, false);
                     echo "<option value='" . esc_attr($k) . "' $selected>" . esc_html($label) . "</option>";
@@ -186,11 +236,12 @@ class Av02Settings
 
             case 'repeater':
                 $items = is_array($val) ? $val : [];
-                echo "<div class='hwn-repeater-wrapper' data-name='" . esc_attr("{$this->option_key}[{$id}][]") . "'>";
+                $data_name = "{$this->option_key}[{$id}][]";
+                echo "<div class='hwn-repeater-wrapper' data-name='" . esc_attr($data_name) . "'>";
                 if (!empty($items)) {
                     foreach ($items as $text) {
                         echo "<div class='repeater-item'>
-                                <input type='text' name='{$this->option_key}[{$id}][]' value='" . esc_attr($text) . "' />
+                                <input type='text' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='" . esc_attr($text) . "' />
                                 <button type='button' class='button remove-item'>✕</button>
                               </div>";
                     }
@@ -198,6 +249,57 @@ class Av02Settings
                 echo "</div>";
                 echo "<button type='button' class='button add-item' data-target='" . esc_attr($id) . "'>+ Add</button>";
                 break;
+        }
+    }
+
+    private function render_icon_html(?string $icon): string
+    {
+        $icon = is_string($icon ?? null) ? trim($icon) : '';
+        if ($icon === '') {
+            return '';
+        }
+
+        if (filter_var($icon, FILTER_VALIDATE_URL)) {
+            return "<img src='" . esc_url($icon) . "' class='hwn-icon-img' alt='' />";
+        }
+
+        if (str_starts_with($icon, 'dashicons-')) {
+            return "<span class='dashicons " . esc_attr($icon) . "' aria-hidden='true'></span>";
+        }
+
+        return "<span class='hwn-icon-emoji'>" . esc_html($icon) . "</span>";
+    }
+
+    private function render_fields_group(array $fields): void
+    {
+        foreach ($fields as $field) {
+            echo "<div class='hwn-field'>";
+            if (($field['type'] ?? '') !== 'checkbox') {
+                echo "<label class='hwn-label'>" . esc_html($field['label'] ?? '') . "</label>";
+            }
+            $this->render_field($field);
+            echo "</div>";
+        }
+    }
+
+    private function render_blocks(?array $blocks): void
+    {
+        if (empty($blocks) || !is_array($blocks)) {
+            return;
+        }
+
+        foreach ($blocks as $block) {
+            $title = $block['title'] ?? '';
+            $icon  = $block['icon'] ?? '';
+            echo "<div class='hwn-block'>";
+            if ($title !== '' || $icon !== '') {
+                $icon_html = $this->render_icon_html($icon);
+                echo "<h3 class='hwn-block-title'>" . $icon_html . "<span>" . esc_html($title) . "</span></h3>";
+            }
+            echo "<div class='hwn-block-body'>";
+            $this->render_fields_group($block['fields'] ?? []);
+            echo "</div>";
+            echo "</div>";
         }
     }
 
@@ -217,7 +319,8 @@ class Av02Settings
                 foreach ($this->sections as $key => $sec) {
                     $active = ($active_tab === $key) ? 'nav-tab-active' : '';
                     $url = esc_url(add_query_arg(['page' => 'headless-wp-next', 'tab' => $key], admin_url('admin.php')));
-                    echo "<a href='{$url}' class='nav-tab {$active}'>" . esc_html($sec['title']) . "</a>";
+                    $icon_html = $this->render_icon_html($sec['icon'] ?? '');
+                    echo "<a href='{$url}' class='nav-tab {$active}'>" . $icon_html . "<span>" . esc_html($sec['title']) . "</span></a>";
                 }
                 ?>
             </h2>
@@ -232,44 +335,52 @@ class Av02Settings
                     if (!isset($sub_tabs[$active_sub])) {
                         $active_sub = array_key_first($sub_tabs);
                     }
+
                     echo "<div class='hwn-vertical-layout'>";
+
                     echo "  <div class='hwn-vertical-nav'>";
                     echo "    <ul>";
                     foreach ($sub_tabs as $sub_key => $sub) {
                         $is_active = $active_sub === $sub_key ? 'active' : '';
                         $url = esc_url(add_query_arg([
                                 'page' => 'headless-wp-next',
-                                'tab' => $active_tab,
-                                'sub' => $sub_key
+                                'tab'  => $active_tab,
+                                'sub'  => $sub_key
                         ], admin_url('admin.php')));
-                        echo "<li class='{$is_active}'><a href='{$url}'>" . esc_html($sub['title']) . "</a></li>";
+                        $icon_html = $this->render_icon_html($sub['icon'] ?? '');
+                        echo "<li class='{$is_active}'><a href='{$url}'>" . $icon_html . "<span>" . esc_html($sub['title']) . "</span></a></li>";
                     }
                     echo "    </ul>";
                     echo "  </div>";
 
+                    $current_sub = $sub_tabs[$active_sub];
                     echo "  <div class='hwn-vertical-content'>";
-                    echo "    <h2 class='hwn-vertical-title'>" . esc_html($section['title']) . " — " . esc_html($sub_tabs[$active_sub]['title']) . "</h2>";
+                    $head_icon = $this->render_icon_html($section['icon'] ?? '');
+                    $sub_icon  = $this->render_icon_html($current_sub['icon'] ?? '');
+                    echo "    <h2 class='hwn-vertical-title'>" . "<span>" . esc_html($section['title']) . "</span> — " . "<span>" . esc_html($current_sub['title']) . "</span></h2>";
+
                     echo "    <div class='hwn-section'>";
-                    foreach ($sub_tabs[$active_sub]['fields'] as $field) {
-                        echo "<div class='hwn-field'>";
-                        if (($field['type'] ?? '') !== 'checkbox') {
-                            echo "<label class='hwn-label'>" . esc_html($field['label']) . "</label>";
-                        }
-                        $this->render_field($field);
+                    $this->render_blocks($current_sub['blocks'] ?? []);
+                    if (!empty($current_sub['fields'])) {
+                        echo "<div class='hwn-block'>";
+                        echo "  <div class='hwn-block-body'>";
+                        $this->render_fields_group($current_sub['fields']);
+                        echo "  </div>";
                         echo "</div>";
                     }
                     echo "    </div>";
+
                     submit_button();
                     echo "  </div>";
                     echo "</div>";
                 } else {
                     echo "<div class='hwn-section'>";
-                    foreach (($section['fields'] ?? []) as $field) {
-                        echo "<div class='hwn-field'>";
-                        if (($field['type'] ?? '') !== 'checkbox') {
-                            echo "<label class='hwn-label'>" . esc_html($field['label']) . "</label>";
-                        }
-                        $this->render_field($field);
+                    $this->render_blocks($section['blocks'] ?? []);
+                    if (!empty($section['fields'])) {
+                        echo "<div class='hwn-block'>";
+                        echo "  <div class='hwn-block-body'>";
+                        $this->render_fields_group($section['fields']);
+                        echo "  </div>";
                         echo "</div>";
                     }
                     echo "</div>";
