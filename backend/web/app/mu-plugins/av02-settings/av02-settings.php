@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Headless WP Next
  * Description: Headless WordPress settings management
- * Version: 0.3.0
+ * Version: 0.2.4
  * Author: alexvice02
  */
 
@@ -16,104 +16,122 @@ class Av02Settings
     public function __construct()
     {
         $this->sections = [
-            'general' => [
-                'title' => 'General',
-                'icon' => 'dashicons-admin-generic',
-                'fields' => [
-                    ['id' => 'text_field', 'label' => 'Text field', 'type' => 'text'],
-                    ['id' => 'checkbox_field', 'label' => 'Checkbox', 'type' => 'checkbox'],
-                ],
-                'blocks' => [
-                    [
-                        'title' => 'Basics',
-                        'icon' => '🧩',
+                'general' => [
+                        'title' => 'General',
+                        'icon' => 'dashicons-admin-generic',
                         'fields' => [
-                            ['id' => 'general_basic_note', 'label' => 'Note', 'type' => 'text'],
-                        ],
-                    ],
-                ],
-            ],
-            'advanced' => [
-                'title' => 'Advanced',
-                'icon' => 'dashicons-admin-tools',
-                'fields' => [
-                    ['id' => 'select_field', 'label' => 'Select', 'type' => 'select', 'options' => [
-                        'one' => 'Option 1',
-                        'two' => 'Option 2',
-                        'three' => 'Option 3'
-                    ]],
-                    ['id' => 'repeater_field', 'label' => 'Repeater', 'type' => 'repeater'],
-                ]
-            ],
-            'api' => [
-                'title' => 'API',
-                'icon' => 'dashicons-rest-api',
-                'tabs' => [
-                        'wordpress-api' => [
-                            'title' => 'WordPress API',
-                            'icon' => 'dashicons-wordpress',
-                            'fields' => [
-                                [
-                                    'id' => 'api_enabled_endpoints',
-                                    'label' => 'Enabled Endpoints',
-                                    'tooltip' => 'Some endpoints are disabled by default to avoid some vulnerabilities. Enable them to use them in your app.',
-                                    'type' => 'checkbox_group',
-                                    'options' => [
-                                        'posts' => 'Posts',
-                                        'pages' => 'Pages',
-                                        'media' => 'Media',
-                                        'categories' => 'Categories',
-                                        'tags' => 'Tags',
-                                        'comments' => 'Comments',
-                                        'users' => 'Users',
-                                        'settings' => 'Settings',
-                                        'themes' => 'Themes',
-                                        'search' => 'Search',
-                                        'blocks' => 'Blocks',
-                                        'oembed' => 'OEmbed',
-                                    ],
-                                ],
-                            ],
-                        ],
-                        'posts' => [
-                        'title' => 'Posts',
-                        'icon' => 'dashicons-admin-post',
-                        'fields' => [
-                            ['id' => 'api_posts_include_meta', 'label' => 'Include meta', 'type' => 'checkbox']
+                                ['id' => 'text_field', 'label' => 'Text field', 'type' => 'text'],
+                                ['id' => 'checkbox_field', 'label' => 'Checkbox', 'type' => 'checkbox'],
                         ],
                         'blocks' => [
-                            [
-                                'title' => 'Visibility',
-                                'icon' => '',
-                                'fields' => [
-                                    ['id' => 'api_posts_show_private', 'label' => 'Show private', 'type' => 'checkbox'],
+                                [
+                                        'title' => 'Basics',
+                                        'icon' => '🧩',
+                                        'fields' => [
+                                                ['id' => 'general_basic_note', 'label' => 'Note', 'type' => 'text'],
+                                        ],
                                 ],
-                            ],
-                            [
-                                'title' => 'Additional',
-                                'icon' => '',
-                                'fields' => [
-
-                                ],
-                            ],
                         ],
-                    ],
-                    'menus' => [
-                        'title' => 'Menus',
-                        'icon' => 'dashicons-menu',
-                        'fields' => [
-                            ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox', 'tooltip' => 'Увімкніть, щоб надавати меню через REST API.']
-                        ],
-                    ]
                 ],
-            ],
-            'integrations' => [
-                'title' => 'Integrations',
-                'icon' => 'dashicons-admin-plugins',
-                'fields' => [
+                'advanced' => [
+                        'title' => 'Advanced',
+                        'icon' => 'dashicons-admin-tools',
+                        'fields' => [
+                                ['id' => 'select_field', 'label' => 'Select', 'type' => 'select', 'options' => [
+                                        'one' => 'Option 1',
+                                        'two' => 'Option 2',
+                                        'three' => 'Option 3'
+                                ]],
+                                ['id' => 'repeater_field', 'label' => 'Repeater', 'type' => 'repeater'],
+                        ]
+                ],
+                'api' => [
+                        'title' => 'API',
+                        'icon' => 'dashicons-rest-api',
+                        'tabs' => [
+                                'wordpress-api' => [
+                                        'title' => 'WordPress API',
+                                        'icon' => 'dashicons-wordpress',
+                                        'fields' => [
+                                                [
+                                                        'id' => 'api_enabled_endpoints',
+                                                        'label' => 'Enabled Endpoints',
+                                                        'tooltip' => 'Some endpoints are disabled by default to avoid some vulnerabilities. Enable them to use them in your app.',
+                                                        'type' => 'checkbox_group',
+                                                        'options' => [
+                                                                'posts' => 'Posts',
+                                                                'pages' => 'Pages',
+                                                                'media' => 'Media',
+                                                                'categories' => 'Categories',
+                                                                'tags' => 'Tags',
+                                                                'comments' => 'Comments',
+                                                                'users' => 'Users',
+                                                                'settings' => 'Settings',
+                                                                'themes' => 'Themes',
+                                                                'search' => 'Search',
+                                                                'blocks' => 'Blocks',
+                                                                'oembed' => 'OEmbed',
+                                                        ],
+                                                ],
+                                        ],
+                                ],
+                                'posts' => [
+                                        'title' => 'Posts / Pages',
+                                        'icon' => 'dashicons-admin-post',
+                                        'blocks' => [
+                                                [
+                                                        'title' => 'Include',
+                                                        'icon' => '',
+                                                        'fields' => [
+                                                                [
+                                                                        'id' => 'api_posts_include',
+                                                                        'label' => 'Include Data',
+                                                                        'tooltip' => 'Include to API response additional data (/wp/v2/posts | /wp/v2/pages).',
+                                                                        'type' => 'checkbox_group',
+                                                                        'options' => [
+                                                                                'thumbnails' => [
+                                                                                        'label' => 'Thumbnails'
+                                                                                ],
+                                                                                'author_data' => 'Author Data',
+                                                                                'featured_image' => [
+                                                                                        'label' => 'Featured Image',
+                                                                                        'tooltip' => [
+                                                                                                'featured_image' => 'http://website.com/app/uploads/2025/01/featured-image.jpg',
+                                                                                                'post_data' => '...'
+                                                                                        ]
+                                                                                ],
+                                                                                'excerpt' => 'Excerpt',
+                                                                                'categories' => 'Categories',
+                                                                                'tags' => 'Tags'
+                                                                        ],
+                                                                ],
+                                                        ],
+                                                ],
+                                                [
+                                                        'title' => 'Additional',
+                                                        'icon' => '',
+                                                        'fields' => [
 
+                                                        ],
+                                                ],
+                                        ],
+                                ],
+                                'menus' => [
+                                        'title' => 'Menus',
+                                        'icon' => 'dashicons-menu',
+                                        'fields' => [
+                                                ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox', 'tooltip' => 'Увімкніть, щоб надавати меню через REST API.']
+                                        ],
+                                ]
+                        ],
+                ],
+                'integrations' => [
+                        'title' => 'Integrations',
+                        'icon' => 'dashicons-admin-plugins',
+                        'fields' => [
+
+                        ]
                 ]
-            ]
         ];
 
         add_action('admin_menu', [$this, 'add_menu']);
@@ -140,8 +158,8 @@ class Av02Settings
             $this->option_key,
             $this->option_key,
             [
-                'type'              => 'array',
-                'default'           => [],
+                'type' => 'array',
+                'default' => [],
                 'sanitize_callback' => [$this, 'sanitize_options'],
             ]
         );
@@ -183,7 +201,6 @@ class Av02Settings
                 case 'checkbox':
                     $output[$id] = $val ? 1 : 0;
                     break;
-
                 case 'checkbox_group':
                     $allowed = array_keys((array)($field['options'] ?? []));
                     $vals = is_array($val) ? $val : [];
@@ -193,18 +210,15 @@ class Av02Settings
                     $vals = array_values(array_intersect($vals, $allowed));
                     $output[$id] = $vals;
                     break;
-
                 case 'select':
                 case 'text':
                     $output[$id] = is_string($val) ? sanitize_text_field($val) : '';
                     break;
-
                 case 'repeater':
                     $items = is_array($val) ? array_map('sanitize_text_field', $val) : [];
                     $items = array_values(array_filter($items, static fn($v) => $v !== ''));
                     $output[$id] = $items;
                     break;
-
                 default:
                     $output[$id] = is_scalar($val) ? sanitize_text_field((string)$val) : '';
             }
@@ -260,28 +274,28 @@ class Av02Settings
             case 'text':
                 echo "<input type='text' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='" . esc_attr($val) . "' class='regular-text' />";
                 break;
-
             case 'checkbox':
                 $checked = !empty($val) ? 'checked' : '';
-                $tooltip = $this->render_tooltip_html($field);
+                $tooltip = $this->render_tooltip_html($field['tooltip'] ?? null, $id);
                 echo "<label class='hwn-checkbox-label'><input type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='1' $checked> " . esc_html($field['label']) . $tooltip . "</label>";
                 break;
-
             case 'checkbox_group':
                 $selected = is_array($val) ? $val : [];
                 $opts = (array)($field['options'] ?? []);
                 echo "<div class='hwn-checkbox-group' role='group' aria-label='" . esc_attr($field['label'] ?? $id) . "'>";
-                foreach ($opts as $opt_val => $opt_label) {
+                foreach ($opts as $opt_val => $opt_def) {
+                    $label = is_array($opt_def) ? ($opt_def['label'] ?? (string)$opt_val) : (string)$opt_def;
+                    $opt_tip = is_array($opt_def) ? ($opt_def['tooltip'] ?? null) : null;
                     $cid = sanitize_key($id . '_' . $opt_val);
                     $is_checked = in_array($opt_val, $selected, true) ? 'checked' : '';
+                    $tooltip = $this->render_tooltip_html($opt_tip, $cid);
                     echo "<label class='hwn-checkbox-item' for='" . esc_attr($cid) . "'>";
-                    echo "  <input id='" . esc_attr($cid) . "' type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='" . esc_attr((string)$opt_val) . "' $is_checked />";
-                    echo "  <span class='hwn-checkbox-text'>" . esc_html((string)$opt_label) . "</span>";
+                    echo "    <input id='" . esc_attr($cid) . "' type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='" . esc_attr((string)$opt_val) . "' $is_checked />";
+                    echo "    <span class='hwn-checkbox-text'>" . esc_html($label) . $tooltip . "</span>";
                     echo "</label>";
                 }
                 echo "</div>";
                 break;
-
             case 'select':
                 echo "<select name='" . esc_attr("{$this->option_key}[{$id}]") . "'>";
                 foreach (($field['options'] ?? []) as $k => $label) {
@@ -290,7 +304,6 @@ class Av02Settings
                 }
                 echo "</select>";
                 break;
-
             case 'repeater':
                 $items = is_array($val) ? $val : [];
                 $data_name = "{$this->option_key}[{$id}][]";
@@ -315,33 +328,35 @@ class Av02Settings
         if ($icon === '') {
             return '';
         }
-
         if (filter_var($icon, FILTER_VALIDATE_URL)) {
             return "<img src='" . esc_url($icon) . "' class='hwn-icon-img' alt='' />";
         }
-
         if (str_starts_with($icon, 'dashicons-')) {
             return "<span class='dashicons " . esc_attr($icon) . "' aria-hidden='true'></span>";
         }
-
         return "<span class='hwn-icon-emoji'>" . esc_html($icon) . "</span>";
     }
 
-    private function render_tooltip_html(array $field): string
+    private function render_tooltip_html($tip, string $idBase): string
     {
-        $tip = isset($field['tooltip']) && is_string($field['tooltip']) ? trim($field['tooltip']) : '';
-        if ($tip === '') {
+        if ($tip === null || $tip === '' || (is_array($tip) && $tip === [])) {
             return '';
         }
 
-        $id = isset($field['id']) ? (string) $field['id'] : uniqid('hwn_tip_', true);
-        $desc_id = 'tip-' . sanitize_key($id);
-
+        $desc_id = 'tip-' . sanitize_key($idBase);
         $icon = "<span class='dashicons dashicons-editor-help' aria-hidden='true'></span>";
+
+        $content = '';
+        if (is_string($tip)) {
+            $content = "<span class='hwn-tooltip-text'>" . esc_html($tip) . "</span>";
+        } else {
+            $json = wp_json_encode($tip, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $content = "<pre class='hwn-tooltip-pre'><code>" . esc_html($json) . "</code></pre>";
+        }
 
         $html  = "<span class='hwn-tooltip' role='img' tabindex='0' aria-describedby='" . esc_attr($desc_id) . "'>";
         $html .= $icon;
-        $html .= "<span id='" . esc_attr($desc_id) . "' class='hwn-tooltip-content' role='tooltip'>" . esc_html($tip) . "</span>";
+        $html .= "<span id='" . esc_attr($desc_id) . "' class='hwn-tooltip-content' role='tooltip'>" . $content . "</span>";
         $html .= "</span>";
 
         return $html;
@@ -352,7 +367,7 @@ class Av02Settings
         foreach ($fields as $field) {
             echo "<div class='hwn-field'>";
             if (($field['type'] ?? '') !== 'checkbox') {
-                $tooltip = $this->render_tooltip_html($field);
+                $tooltip = $this->render_tooltip_html($field['tooltip'] ?? null, $field['id'] ?? uniqid('fld_', true));
                 echo "<label class='hwn-label'>" . esc_html($field['label'] ?? '') . $tooltip . "</label>";
             }
             $this->render_field($field);
@@ -422,8 +437,8 @@ class Av02Settings
                         $is_active = $active_sub === $sub_key ? 'active' : '';
                         $url = esc_url(add_query_arg([
                                 'page' => 'headless-wp-next',
-                                'tab'  => $active_tab,
-                                'sub'  => $sub_key
+                                'tab' => $active_tab,
+                                'sub' => $sub_key,
                         ], admin_url('admin.php')));
                         $icon_html = $this->render_icon_html($sub['icon'] ?? '');
                         echo "<li class='{$is_active}'><a href='{$url}'>" . $icon_html . "<span>" . esc_html($sub['title']) . "</span></a></li>";
@@ -433,8 +448,6 @@ class Av02Settings
 
                     $current_sub = $sub_tabs[$active_sub];
                     echo "  <div class='hwn-vertical-content'>";
-                    $head_icon = $this->render_icon_html($section['icon'] ?? '');
-                    $sub_icon  = $this->render_icon_html($current_sub['icon'] ?? '');
                     echo "    <h2 class='hwn-vertical-title'>" . "<span>" . esc_html($section['title']) . "</span> — " . "<span>" . esc_html($current_sub['title']) . "</span></h2>";
 
                     echo "    <div class='hwn-section'>";

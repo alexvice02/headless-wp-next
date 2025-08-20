@@ -380,6 +380,7 @@
     visibility: hidden;
     transition: opacity .15s ease, visibility .15s ease;
     white-space: normal;
+    overflow: hidden;
 }
 .hwn-tooltip:focus .hwn-tooltip-content,
 .hwn-tooltip:hover .hwn-tooltip-content {
@@ -387,6 +388,22 @@
     visibility: visible;
 }
 .hwn-label, .hwn-checkbox-label { display: inline-flex; align-items: center; gap: 6px; }
+
+.hwn-tooltip-pre {
+    margin: 0;
+    max-width: 520px;
+    max-height: 260px;
+    overflow: auto;
+    background: #11161a;
+    color: #e6edf3;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.45;
+    border: 1px solid rgba(255,255,255,.08);
+}
+.hwn-tooltip-text + .hwn-tooltip-pre { margin-top: 6px; }
 
 /* Checkbox group */
 .hwn-checkbox-group {
@@ -418,6 +435,9 @@
 }
 
 .hwn-checkbox-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 13px;
     color: #1d2327;
     user-select: none;
