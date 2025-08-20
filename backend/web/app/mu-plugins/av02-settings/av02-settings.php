@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Headless WP Next
  * Description: Headless WordPress settings management
- * Version: 0.2.1
+ * Version: 0.2.2
  * Author: alexvice02
  */
 
@@ -60,7 +60,7 @@ class Av02Settings
                                 'title' => 'Visibility',
                                 'icon' => '',
                                 'fields' => [
-                                    ['id' => 'api_posts_show_private', 'label' => 'Show private', 'type' => 'checkbox']
+                                    ['id' => 'api_posts_show_private', 'label' => 'Show private', 'type' => 'checkbox'],
                                 ],
                             ],
                             [
@@ -76,7 +76,7 @@ class Av02Settings
                         'title' => 'Menus',
                         'icon' => 'dashicons-menu',
                         'fields' => [
-                            ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox']
+                            ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox', 'tooltip' => 'Увімкніть, щоб надавати меню через REST API.']
                         ],
                     ]
                 ],
@@ -111,13 +111,13 @@ class Av02Settings
     public function register_settings(): void
     {
         register_setting(
-                $this->option_key,
-                $this->option_key,
-                [
-                        'type'              => 'array',
-                        'default'           => [],
-                        'sanitize_callback' => [$this, 'sanitize_options'],
-                ]
+            $this->option_key,
+            $this->option_key,
+            [
+                'type'              => 'array',
+                'default'           => [],
+                'sanitize_callback' => [$this, 'sanitize_options'],
+            ]
         );
     }
 
@@ -222,7 +222,8 @@ class Av02Settings
 
             case 'checkbox':
                 $checked = !empty($val) ? 'checked' : '';
-                echo "<label><input type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='1' $checked> " . esc_html($field['label']) . "</label>";
+                $tooltip = $this->render_tooltip_html($field);
+                echo "<label class='hwn-checkbox-label'><input type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='1' $checked> " . esc_html($field['label']) . $tooltip . "</label>";
                 break;
 
             case 'select':
@@ -270,12 +271,33 @@ class Av02Settings
         return "<span class='hwn-icon-emoji'>" . esc_html($icon) . "</span>";
     }
 
+    private function render_tooltip_html(array $field): string
+    {
+        $tip = isset($field['tooltip']) && is_string($field['tooltip']) ? trim($field['tooltip']) : '';
+        if ($tip === '') {
+            return '';
+        }
+
+        $id = isset($field['id']) ? (string) $field['id'] : uniqid('hwn_tip_', true);
+        $desc_id = 'tip-' . sanitize_key($id);
+
+        $icon = "<span class='dashicons dashicons-editor-help' aria-hidden='true'></span>";
+
+        $html  = "<span class='hwn-tooltip' role='img' tabindex='0' aria-describedby='" . esc_attr($desc_id) . "'>";
+        $html .= $icon;
+        $html .= "<span id='" . esc_attr($desc_id) . "' class='hwn-tooltip-content' role='tooltip'>" . esc_html($tip) . "</span>";
+        $html .= "</span>";
+
+        return $html;
+    }
+
     private function render_fields_group(array $fields): void
     {
         foreach ($fields as $field) {
             echo "<div class='hwn-field'>";
             if (($field['type'] ?? '') !== 'checkbox') {
-                echo "<label class='hwn-label'>" . esc_html($field['label'] ?? '') . "</label>";
+                $tooltip = $this->render_tooltip_html($field);
+                echo "<label class='hwn-label'>" . esc_html($field['label'] ?? '') . $tooltip . "</label>";
             }
             $this->render_field($field);
             echo "</div>";

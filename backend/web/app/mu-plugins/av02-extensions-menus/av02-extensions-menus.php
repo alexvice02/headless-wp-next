@@ -3,7 +3,7 @@
  * Plugin Name: WP Headless - REST API Menus
  * Plugin URI: https://github.com/alexvice02/headless-wp-next/tree/main/backend/web/app/mu-plugins/av02-integration-menus
  * Description: Extends WordPress REST API to support menus
- * Version: 0.2.1
+ * Version: 0.2.2
  * Author: alexvice02
  * Author URI: https://github.com/alexvice02
  * License: GPLv2

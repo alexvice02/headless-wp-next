@@ -351,3 +351,39 @@
 .hwn-admin .nav-tab-wrapper + .hwn-default-layout {
     margin-top: 0;
 }
+
+/* Tooltips */
+.hwn-tooltip {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    position: relative;
+    cursor: help;
+    color: #646970;
+}
+.hwn-tooltip .dashicons { font-size: 16px; width: 16px; height: 16px; }
+.hwn-tooltip-content {
+    position: absolute;
+    z-index: 1000;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 8px);
+    max-width: 280px;
+    background: #1d2327;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.4;
+    box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .15s ease, visibility .15s ease;
+    white-space: normal;
+}
+.hwn-tooltip:focus .hwn-tooltip-content,
+.hwn-tooltip:hover .hwn-tooltip-content {
+    opacity: 1;
+    visibility: visible;
+}
+.hwn-label, .hwn-checkbox-label { display: inline-flex; align-items: center; gap: 6px; }
