@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Headless WP Next
  * Description: Headless WordPress settings management
- * Version: 0.2.4
+ * Version: 0.3.0
  * Author: alexvice02
  */
 
@@ -178,7 +178,12 @@ class Av02Settings
             $input = [];
         }
 
-        $output = [];
+        // 1) Беремо поточні збережені опції і будемо оновлювати лише присутні в запиті поля
+        $output = $this->get_options();
+        if (!is_array($output)) {
+            $output = [];
+        }
+
         $flat_fields = $this->collect_all_fields($this->sections);
 
         foreach ($flat_fields as $field) {
@@ -188,37 +193,38 @@ class Av02Settings
             $id = $field['id'];
 
             if (!array_key_exists($id, $input)) {
-                if (($field['type'] ?? '') === 'checkbox') {
-                    $output[$id] = 0;
-                } elseif (($field['type'] ?? '') === 'checkbox_group') {
-                    $output[$id] = [];
-                }
                 continue;
             }
 
             $val = $input[$id];
+
             switch ($field['type']) {
                 case 'checkbox':
-                    $output[$id] = $val ? 1 : 0;
+                    $output[$id] = !empty($val) ? 1 : 0;
                     break;
+
                 case 'checkbox_group':
                     $allowed = array_keys((array)($field['options'] ?? []));
                     $vals = is_array($val) ? $val : [];
+
                     $vals = array_values(array_unique(array_filter($vals, static function ($v) {
                         return is_scalar($v) && $v !== '';
                     })));
                     $vals = array_values(array_intersect($vals, $allowed));
                     $output[$id] = $vals;
                     break;
+
                 case 'select':
                 case 'text':
                     $output[$id] = is_string($val) ? sanitize_text_field($val) : '';
                     break;
+
                 case 'repeater':
                     $items = is_array($val) ? array_map('sanitize_text_field', $val) : [];
                     $items = array_values(array_filter($items, static fn($v) => $v !== ''));
                     $output[$id] = $items;
                     break;
+
                 default:
                     $output[$id] = is_scalar($val) ? sanitize_text_field((string)$val) : '';
             }
@@ -274,12 +280,16 @@ class Av02Settings
             case 'text':
                 echo "<input type='text' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='" . esc_attr($val) . "' class='regular-text' />";
                 break;
+
             case 'checkbox':
+                echo "<input type='hidden' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='0' />";
                 $checked = !empty($val) ? 'checked' : '';
                 $tooltip = $this->render_tooltip_html($field['tooltip'] ?? null, $id);
                 echo "<label class='hwn-checkbox-label'><input type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='1' $checked> " . esc_html($field['label']) . $tooltip . "</label>";
                 break;
+
             case 'checkbox_group':
+                echo "<input type='hidden' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='__hwn_empty__' />";
                 $selected = is_array($val) ? $val : [];
                 $opts = (array)($field['options'] ?? []);
                 echo "<div class='hwn-checkbox-group' role='group' aria-label='" . esc_attr($field['label'] ?? $id) . "'>";
@@ -296,6 +306,7 @@ class Av02Settings
                 }
                 echo "</div>";
                 break;
+
             case 'select':
                 echo "<select name='" . esc_attr("{$this->option_key}[{$id}]") . "'>";
                 foreach (($field['options'] ?? []) as $k => $label) {
@@ -304,7 +315,9 @@ class Av02Settings
                 }
                 echo "</select>";
                 break;
+
             case 'repeater':
+                echo "<input type='hidden' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='' />";
                 $items = is_array($val) ? $val : [];
                 $data_name = "{$this->option_key}[{$id}][]";
                 echo "<div class='hwn-repeater-wrapper' data-name='" . esc_attr($data_name) . "'>";
