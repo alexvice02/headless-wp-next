@@ -8,40 +8,52 @@
 
 namespace AV02\Extensions\Posts;
 
+use AV02\Settings\Av02Settings;
+
 add_action('rest_api_init', function () {
+    $included_data = Av02Settings::get_option('api_posts_include');
+
     foreach (['post', 'page'] as $type) {
-        register_rest_field($type, 'featured_image', [
-            'get_callback' => function (array $obj) {
-                return get_featured_image((int) $obj['id']);
-            },
-        ]);
-        register_rest_field($type, 'author_info', [
-            'get_callback' => function (array $obj) {
-                $post = get_post((int) $obj['id']);
-                if (!$post) return null;
-                return [
-                    'id'    => (int) $post->post_author,
-                    'name'  => get_the_author_meta('display_name', $post->post_author),
-                    'avatar'=> get_avatar_url($post->post_author, ['size' => 96]),
-                ];
-            },
-        ]);
-        register_rest_field($type, 'terms', [
-            'get_callback' => function (array $obj) use ($type) {
-                $id = (int) $obj['id'];
-                $data = [];
-                foreach (get_object_taxonomies($type, 'objects') as $tax) {
-                    if (!$tax->public) continue;
-                    $terms = get_the_terms($id, $tax->name) ?: [];
-                    $data[$tax->name] = array_map(fn($t) => [
-                        'id'   => (int) $t->term_id,
-                        'slug' => $t->slug,
-                        'name' => $t->name,
-                    ], is_array($terms) ? $terms : []);
-                }
-                return $data;
-            },
-        ]);
+        if( in_array('featured_image', $included_data) ) {
+            register_rest_field($type, 'featured_image', [
+                'get_callback' => function (array $obj) {
+                    return get_featured_image((int) $obj['id']);
+                },
+            ]);
+        }
+
+        if ( in_array('author_info', $included_data) ) {
+            register_rest_field($type, 'author_info', [
+                'get_callback' => function (array $obj) {
+                    $post = get_post((int) $obj['id']);
+                    if (!$post) return null;
+                    return [
+                        'id'    => (int) $post->post_author,
+                        'name'  => get_the_author_meta('display_name', $post->post_author),
+                        'avatar'=> get_avatar_url($post->post_author, ['size' => 96]),
+                    ];
+                },
+            ]);
+        }
+
+        if( in_array('categories', $included_data) ) {
+            register_rest_field($type, 'terms', [
+                'get_callback' => function (array $obj) use ($type) {
+                    $id = (int) $obj['id'];
+                    $data = [];
+                    foreach (get_object_taxonomies($type, 'objects') as $tax) {
+                        if (!$tax->public) continue;
+                        $terms = get_the_terms($id, $tax->name) ?: [];
+                        $data[$tax->name] = array_map(fn($t) => [
+                            'id'   => (int) $t->term_id,
+                            'slug' => $t->slug,
+                            'name' => $t->name,
+                        ], is_array($terms) ? $terms : []);
+                    }
+                    return $data;
+                },
+            ]);
+        }
     }
 });
 

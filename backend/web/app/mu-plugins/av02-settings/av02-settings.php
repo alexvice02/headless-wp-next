@@ -6,11 +6,15 @@
  * Author: alexvice02
  */
 
+namespace AV02\Settings;
+
 if (!defined('ABSPATH')) exit;
 
 class Av02Settings
 {
-    private string $option_key = 'av02_options';
+    private const option_key = 'av02_options';
+    protected static $options = null;
+    protected static $flat = [];
     private array $sections = [];
 
     public function __construct()
@@ -86,13 +90,23 @@ class Av02Settings
                                                                 [
                                                                         'id' => 'api_posts_include',
                                                                         'label' => 'Include Data',
-                                                                        'tooltip' => 'Include to API response additional data (/wp/v2/posts | /wp/v2/pages).',
+                                                                        'tooltip' => 'Include additional data to API response  (/wp/v2/posts | /wp/v2/pages).',
                                                                         'type' => 'checkbox_group',
                                                                         'options' => [
                                                                                 'thumbnails' => [
                                                                                         'label' => 'Thumbnails'
                                                                                 ],
-                                                                                'author_data' => 'Author Data',
+                                                                                'author_info' => [
+                                                                                        'label' => 'Author Info',
+                                                                                        'tooltip' => [
+                                                                                                'author_info' => [
+                                                                                                        'id'    => 1,
+                                                                                                        'name'  => 'Author Name',
+                                                                                                        'avatar'=> 'https://example.com/avatar.jpg',
+                                                                                                ],
+                                                                                                'post_data' => '...'
+                                                                                        ]
+                                                                                ],
                                                                                 'featured_image' => [
                                                                                         'label' => 'Featured Image',
                                                                                         'tooltip' => [
@@ -155,8 +169,8 @@ class Av02Settings
     public function register_settings(): void
     {
         register_setting(
-            $this->option_key,
-            $this->option_key,
+            self::option_key,
+            self::option_key,
             [
                 'type' => 'array',
                 'default' => [],
@@ -178,7 +192,6 @@ class Av02Settings
             $input = [];
         }
 
-        // 1) Беремо поточні збережені опції і будемо оновлювати лише присутні в запиті поля
         $output = $this->get_options();
         if (!is_array($output)) {
             $output = [];
@@ -267,7 +280,7 @@ class Av02Settings
 
     private function get_options(): array
     {
-        return get_option($this->option_key, []);
+        return get_option(self::option_key, []);
     }
 
     private function render_field(array $field): void
@@ -278,18 +291,18 @@ class Av02Settings
 
         switch ($field['type']) {
             case 'text':
-                echo "<input type='text' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='" . esc_attr($val) . "' class='regular-text' />";
+                echo "<input type='text' name='" . esc_attr(self::option_key . "[{$id}]") . "' value='" . esc_attr($val) . "' class='regular-text' />";
                 break;
 
             case 'checkbox':
-                echo "<input type='hidden' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='0' />";
+                echo "<input type='hidden' name='" . esc_attr(self::option_key . "[{$id}]") . "' value='0' />";
                 $checked = !empty($val) ? 'checked' : '';
                 $tooltip = $this->render_tooltip_html($field['tooltip'] ?? null, $id);
-                echo "<label class='hwn-checkbox-label'><input type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='1' $checked> " . esc_html($field['label']) . $tooltip . "</label>";
+                echo "<label class='hwn-checkbox-label'><input type='checkbox' name='" . esc_attr(self::option_key . "[{$id}]") . "' value='1' $checked> " . esc_html($field['label']) . $tooltip . "</label>";
                 break;
 
             case 'checkbox_group':
-                echo "<input type='hidden' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='__hwn_empty__' />";
+                echo "<input type='hidden' name='" . esc_attr(self::option_key . "[{$id}][]") . "' value='__hwn_empty__' />";
                 $selected = is_array($val) ? $val : [];
                 $opts = (array)($field['options'] ?? []);
                 echo "<div class='hwn-checkbox-group' role='group' aria-label='" . esc_attr($field['label'] ?? $id) . "'>";
@@ -300,7 +313,7 @@ class Av02Settings
                     $is_checked = in_array($opt_val, $selected, true) ? 'checked' : '';
                     $tooltip = $this->render_tooltip_html($opt_tip, $cid);
                     echo "<label class='hwn-checkbox-item' for='" . esc_attr($cid) . "'>";
-                    echo "    <input id='" . esc_attr($cid) . "' type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='" . esc_attr((string)$opt_val) . "' $is_checked />";
+                    echo "    <input id='" . esc_attr($cid) . "' type='checkbox' name='" . esc_attr(self::option_key . "[{$id}][]") . "' value='" . esc_attr((string)$opt_val) . "' $is_checked />";
                     echo "    <span class='hwn-checkbox-text'>" . esc_html($label) . $tooltip . "</span>";
                     echo "</label>";
                 }
@@ -308,7 +321,7 @@ class Av02Settings
                 break;
 
             case 'select':
-                echo "<select name='" . esc_attr("{$this->option_key}[{$id}]") . "'>";
+                echo "<select name='" . esc_attr(self::option_key . "[{$id}]") . "'>";
                 foreach (($field['options'] ?? []) as $k => $label) {
                     $selected = selected($val, $k, false);
                     echo "<option value='" . esc_attr($k) . "' $selected>" . esc_html($label) . "</option>";
@@ -317,14 +330,14 @@ class Av02Settings
                 break;
 
             case 'repeater':
-                echo "<input type='hidden' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='' />";
+                echo "<input type='hidden' name='" . esc_attr(self::option_key . "[{$id}][]") . "' value='' />";
                 $items = is_array($val) ? $val : [];
-                $data_name = "{$this->option_key}[{$id}][]";
+                $data_name = self::option_key . "[{$id}][]";
                 echo "<div class='hwn-repeater-wrapper' data-name='" . esc_attr($data_name) . "'>";
                 if (!empty($items)) {
                     foreach ($items as $text) {
                         echo "<div class='repeater-item'>
-                                <input type='text' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='" . esc_attr($text) . "' />
+                                <input type='text' name='" . esc_attr(self::option_key . "[{$id}][]") . "' value='" . esc_attr($text) . "' />
                                 <button type='button' class='button remove-item'>✕</button>
                               </div>";
                     }
@@ -433,7 +446,7 @@ class Av02Settings
 
             <form method="post" action="options.php" class="hwn-default-layout">
                 <?php
-                settings_fields($this->option_key);
+                settings_fields(self::option_key);
 
                 if (!empty($section['tabs']) && is_array($section['tabs'])) {
                     $sub_tabs = $section['tabs'];
@@ -494,6 +507,21 @@ class Av02Settings
             </form>
         </div>
         <?php
+    }
+
+    public static function get_option($key, $default = null) {
+        if (self::$options === null) {
+            self::$options = get_option(self::option_key, []);
+        }
+
+        if (isset(self::$flat[$key])) {
+            return self::$flat[$key];
+        }
+
+        $value = self::$options[$key] ?? $default;
+        self::$flat[$key] = $value;
+
+        return $value;
     }
 }
 
