@@ -118,3 +118,37 @@ function set_rest_url_prefix(): string
     return getenv('REST_API_PREFIX') ?: 'api';
 }
 add_filter('rest_url_prefix', __NAMESPACE__ . '\set_rest_url_prefix');
+
+
+function filter_rest_endpoints($endpoints) {
+    $options = get_option('av02_options');
+    $enabled = $options['api_enabled_endpoints'] ?? [];
+
+    $map = [
+        'posts' => '/wp/v2/posts',
+        'pages' => '/wp/v2/pages',
+        'media' => '/wp/v2/media',
+        'categories' => '/wp/v2/categories',
+        'tags' => '/wp/v2/tags',
+        'comments' => '/wp/v2/comments',
+        'users' => '/wp/v2/users',
+        'settings' => '/wp/v2/settings',
+        'themes' => '/wp/v2/themes',
+        'search' => '/wp/v2/search',
+        'blocks' => '/wp/v2/blocks',
+        'oembed' => '/oembed/1.0',
+    ];
+
+    foreach ($map as $key => $pattern) {
+        if (!in_array($key, $enabled, true)) {
+            foreach ($endpoints as $route => $handlers) {
+                if (strpos($route, $pattern) === 0) {
+                    unset($endpoints[$route]);
+                }
+            }
+        }
+    }
+
+    return $endpoints;
+}
+add_filter('rest_endpoints', __NAMESPACE__ . '\filter_rest_endpoints');

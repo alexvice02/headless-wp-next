@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Headless WP Next
  * Description: Headless WordPress settings management
- * Version: 0.2.2
+ * Version: 0.3.0
  * Author: alexvice02
  */
 
@@ -49,7 +49,33 @@ class Av02Settings
                 'title' => 'API',
                 'icon' => 'dashicons-rest-api',
                 'tabs' => [
-                    'posts' => [
+                        'wordpress-api' => [
+                            'title' => 'WordPress API',
+                            'icon' => 'dashicons-wordpress',
+                            'fields' => [
+                                [
+                                    'id' => 'api_enabled_endpoints',
+                                    'label' => 'Enabled Endpoints',
+                                    'tooltip' => 'Some endpoints are disabled by default to avoid some vulnerabilities. Enable them to use them in your app.',
+                                    'type' => 'checkbox_group',
+                                    'options' => [
+                                        'posts' => 'Posts',
+                                        'pages' => 'Pages',
+                                        'media' => 'Media',
+                                        'categories' => 'Categories',
+                                        'tags' => 'Tags',
+                                        'comments' => 'Comments',
+                                        'users' => 'Users',
+                                        'settings' => 'Settings',
+                                        'themes' => 'Themes',
+                                        'search' => 'Search',
+                                        'blocks' => 'Blocks',
+                                        'oembed' => 'OEmbed',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'posts' => [
                         'title' => 'Posts',
                         'icon' => 'dashicons-admin-post',
                         'fields' => [
@@ -146,6 +172,8 @@ class Av02Settings
             if (!array_key_exists($id, $input)) {
                 if (($field['type'] ?? '') === 'checkbox') {
                     $output[$id] = 0;
+                } elseif (($field['type'] ?? '') === 'checkbox_group') {
+                    $output[$id] = [];
                 }
                 continue;
             }
@@ -155,17 +183,30 @@ class Av02Settings
                 case 'checkbox':
                     $output[$id] = $val ? 1 : 0;
                     break;
+
+                case 'checkbox_group':
+                    $allowed = array_keys((array)($field['options'] ?? []));
+                    $vals = is_array($val) ? $val : [];
+                    $vals = array_values(array_unique(array_filter($vals, static function ($v) {
+                        return is_scalar($v) && $v !== '';
+                    })));
+                    $vals = array_values(array_intersect($vals, $allowed));
+                    $output[$id] = $vals;
+                    break;
+
                 case 'select':
                 case 'text':
                     $output[$id] = is_string($val) ? sanitize_text_field($val) : '';
                     break;
+
                 case 'repeater':
                     $items = is_array($val) ? array_map('sanitize_text_field', $val) : [];
                     $items = array_values(array_filter($items, static fn($v) => $v !== ''));
                     $output[$id] = $items;
                     break;
+
                 default:
-                    $output[$id] = is_scalar($val) ? sanitize_text_field((string) $val) : '';
+                    $output[$id] = is_scalar($val) ? sanitize_text_field((string)$val) : '';
             }
         }
 
@@ -224,6 +265,21 @@ class Av02Settings
                 $checked = !empty($val) ? 'checked' : '';
                 $tooltip = $this->render_tooltip_html($field);
                 echo "<label class='hwn-checkbox-label'><input type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}]") . "' value='1' $checked> " . esc_html($field['label']) . $tooltip . "</label>";
+                break;
+
+            case 'checkbox_group':
+                $selected = is_array($val) ? $val : [];
+                $opts = (array)($field['options'] ?? []);
+                echo "<div class='hwn-checkbox-group' role='group' aria-label='" . esc_attr($field['label'] ?? $id) . "'>";
+                foreach ($opts as $opt_val => $opt_label) {
+                    $cid = sanitize_key($id . '_' . $opt_val);
+                    $is_checked = in_array($opt_val, $selected, true) ? 'checked' : '';
+                    echo "<label class='hwn-checkbox-item' for='" . esc_attr($cid) . "'>";
+                    echo "  <input id='" . esc_attr($cid) . "' type='checkbox' name='" . esc_attr("{$this->option_key}[{$id}][]") . "' value='" . esc_attr((string)$opt_val) . "' $is_checked />";
+                    echo "  <span class='hwn-checkbox-text'>" . esc_html((string)$opt_label) . "</span>";
+                    echo "</label>";
+                }
+                echo "</div>";
                 break;
 
             case 'select':
