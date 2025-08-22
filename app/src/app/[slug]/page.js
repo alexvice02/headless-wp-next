@@ -29,7 +29,7 @@ export default async function Page({ params }) {
             slug:    wpPage.slug,
             title:   wpPage.title.rendered,
             content: wpPage.content.rendered,
-            blocks:  wpPage.blocks
+            blocks:  wpPage.g_blocks
         };
     }
 
@@ -41,7 +41,6 @@ export default async function Page({ params }) {
             <main className={styles.main}>
                 <div className={'container'} style={{ maxWidth: '1000px', margin: '0 auto' }}>
                     <h1 className={styles.pageTitle}>{ page.title }</h1>
-                    {/*<div className={styles.pageContent} dangerouslySetInnerHTML={{ __html: page.content }} />*/}
                     <BlockRenderer blocks={page.blocks} />
                 </div>
             </main>
