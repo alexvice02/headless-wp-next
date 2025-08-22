@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
 import SiteHeader from "@/app/resources/components/header/SiteHeader";
 import styles from "@/app/page.module.scss";
+import BlockRenderer from "@/app/blocks/BlockRenderer";
 
 export async function generateStaticParams() {
     const api = process.env.WP_API_URL;
-    const pages = await fetch(`${api}/wp-json/wp/v2/pages`).then((res) => res.json());
+    const pages = await fetch(`${api}/wp/v2/pages`).then((res) => res.json());
 
     return pages.map((page) => ({
         slug: page.slug,
@@ -14,7 +15,7 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }) {
     const api = process.env.WP_API_URL;
-    const res = await fetch(`${api}/wp-json/wp/v2/pages?slug=${params.slug}`, {
+    const res = await fetch(`${api}/wp/v2/pages?slug=${params.slug}`, {
         next: { revalidate: 60 },
     });
 
@@ -28,6 +29,7 @@ export default async function Page({ params }) {
             slug:    wpPage.slug,
             title:   wpPage.title.rendered,
             content: wpPage.content.rendered,
+            blocks:  wpPage.blocks
         };
     }
 
@@ -39,7 +41,8 @@ export default async function Page({ params }) {
             <main className={styles.main}>
                 <div className={'container'} style={{ maxWidth: '1000px', margin: '0 auto' }}>
                     <h1 className={styles.pageTitle}>{ page.title }</h1>
-                    <div className={styles.pageContent} dangerouslySetInnerHTML={{ __html: page.content }} />
+                    {/*<div className={styles.pageContent} dangerouslySetInnerHTML={{ __html: page.content }} />*/}
+                    <BlockRenderer blocks={page.blocks} />
                 </div>
             </main>
         </>
