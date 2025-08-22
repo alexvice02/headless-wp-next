@@ -54,6 +54,13 @@ add_action('rest_api_init', function () {
                 },
             ]);
         }
+
+        register_rest_field(['post', 'page'], 'blocks', [
+            'get_callback' => function($post) {
+                $blocks = parse_blocks($post['content']['raw']);
+                return $blocks;
+            },
+        ]);
     }
 });
 
