@@ -3,7 +3,7 @@
  * Plugin Name: WP Headless - REST Extensions
  * Description: Extra REST fields, route resolver, preview, and CORS for headless setup.
  * Author: alexvice02
- * Version: 0.4.0
+ * Version: 0.4.1
  */
 
 namespace AV02\Extensions\Posts;
@@ -55,12 +55,30 @@ add_action('rest_api_init', function () {
             ]);
         }
 
-        register_rest_field(['post', 'page'], 'blocks', [
-            'get_callback' => function($post) {
-                $blocks = parse_blocks($post['content']['raw']);
-                return $blocks;
+        register_rest_field($type, 'g_blocks', [
+            'get_callback' => function (array $obj) {
+                $post_id = (int) ($obj['id'] ?? 0);
+                if (!$post_id) {
+                    return [];
+                }
+
+                $raw = (string) get_post_field('post_content', $post_id);
+
+                $schema_version = 1;
+                $cache_key = 'blocks_simplified:' . $schema_version . ':' . $post_id . ':' . md5($raw);
+                $cached = wp_cache_get($cache_key, 'rest_blocks');
+                if (is_array($cached)) {
+                    return $cached;
+                }
+
+                $parsed = parse_blocks($raw);
+                $mapped = av_map_blocks($parsed, 0);
+
+                wp_cache_set($cache_key, $mapped, 'rest_blocks', 10 * MINUTE_IN_SECONDS);
+                return $mapped;
             },
         ]);
+
     }
 });
 
@@ -88,5 +106,158 @@ function get_featured_image(int $postId): ?array
             ];
         }
     }
+    return $out;
+}
+
+/**
+ * Recursive mapping of Gutenberg blocks to structured format
+ *
+ * Output element format:
+ * [
+ *   'type'         => 'core/paragraph' | ...,
+ *   'attrs'        => [...],
+ *   'children'     => [...], // inner blocks (innerBlocks)
+ *   'htmlFallback' => '<div>…</div>', // safe HTML
+ * ]
+ *
+ * @param array $blocks
+ * @param int $depth
+ * @return array
+ */
+function av_map_blocks(array $blocks, int $depth = 0): array
+{
+    if ($depth > 10) {
+        return [];
+    }
+
+    return array_values(array_map(function (array $b) use ($depth) {
+        $type        = $b['blockName'] ?? null;
+        $attrs       = is_array($b['attrs'] ?? null) ? $b['attrs'] : [];
+        $innerHTML   = (string) ($b['innerHTML'] ?? '');
+        $innerBlocks = is_array($b['innerBlocks'] ?? null) ? $b['innerBlocks'] : [];
+
+        $htmlFallback = '';
+        try {
+            $html = render_block($b);
+            $htmlFallback = is_string($html) ? $html : $innerHTML;
+        } catch (\Throwable $e) {
+            $htmlFallback = $innerHTML;
+        }
+        $htmlFallback = wp_kses_post($htmlFallback);
+
+        $mapped = [
+            'type'         => $type,
+            'attrs'        => $attrs,
+            'children'     => av_map_blocks($innerBlocks, $depth + 1),
+            'htmlFallback' => $htmlFallback,
+        ];
+
+        switch ($type) {
+            case 'core/paragraph':
+                $mapped['text'] = trim(wp_strip_all_tags($innerHTML));
+                break;
+
+            case 'core/heading':
+                $mapped['level'] = isset($attrs['level']) ? (int) $attrs['level'] : 2;
+                $mapped['text']  = trim(wp_strip_all_tags($innerHTML));
+                $mapped['anchor'] = isset($attrs['anchor']) ? (string) $attrs['anchor'] : null;
+                break;
+
+            case 'core/image':
+                $imageData = av_map_core_image($attrs, $innerHTML);
+                if (!empty($imageData)) {
+                    $mapped = array_merge($mapped, $imageData);
+                }
+                break;
+
+            case 'core/video':
+                $mapped += [
+                    'src'      => isset($attrs['src']) ? (string) $attrs['src'] : null,
+                    'poster'   => isset($attrs['poster']) ? (string) $attrs['poster'] : null,
+                    'tracks'   => isset($attrs['tracks']) && is_array($attrs['tracks']) ? $attrs['tracks'] : [],
+                    'autoplay' => !empty($attrs['autoplay']),
+                    'muted'    => !empty($attrs['muted']),
+                    'loop'     => !empty($attrs['loop']),
+                    'controls' => array_key_exists('controls', $attrs) ? (bool) $attrs['controls'] : true,
+                ];
+                break;
+
+            case 'core/embed':
+                $mapped += [
+                    'url'             => isset($attrs['url']) ? (string) $attrs['url'] : null,
+                    'providerName'    => isset($attrs['providerNameSlug']) ? (string) $attrs['providerNameSlug'] : null,
+                    'responsive'      => true,
+                    'aspectRatio'     => isset($attrs['aspectRatio']) ? (string) $attrs['aspectRatio'] : null,
+                ];
+                break;
+
+            case 'core/quote':
+                $mapped['citation'] = isset($attrs['citation']) ? (string) $attrs['citation'] : null;
+                break;
+
+            case 'core/list':
+                $mapped['ordered'] = !empty($attrs['ordered']);
+                break;
+
+            case 'core/group':
+            case 'core/columns':
+            case 'core/column':
+            case 'core/buttons':
+            case 'core/button':
+                break;
+
+            case 'core/block':
+                $refId = isset($attrs['ref']) ? (int) $attrs['ref'] : 0;
+                if ($refId > 0) {
+                    $reusable = get_post($refId);
+                    if ($reusable && $reusable->post_type === 'wp_block') {
+                        $reusable_blocks = parse_blocks($reusable->post_content);
+                        $mapped['children'] = av_map_blocks($reusable_blocks, $depth + 1);
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        return $mapped;
+    }, $blocks));
+}
+
+function av_map_core_image(array $attrs, string $innerHTML): array
+{
+    $out = [];
+
+    $id = isset($attrs['id']) ? (int) $attrs['id'] : 0;
+    if ($id > 0) {
+        $url    = wp_get_attachment_image_url($id, 'full') ?: '';
+        $meta   = wp_get_attachment_metadata($id) ?: [];
+        $alt    = get_post_meta($id, '_wp_attachment_image_alt', true) ?: '';
+        $srcset = wp_get_attachment_image_srcset($id, 'full') ?: '';
+        $sizes  = wp_get_attachment_image_sizes($id, 'full') ?: '';
+
+        $out += [
+            'id'     => $id,
+            'url'    => $url,
+            'alt'    => $alt,
+            'width'  => isset($meta['width']) ? (int) $meta['width'] : null,
+            'height' => isset($meta['height']) ? (int) $meta['height'] : null,
+            'srcset' => $srcset ?: null,
+            'sizes'  => $sizes ?: null,
+        ];
+    } else {
+        if (!empty($attrs['url'])) {
+            $out['url'] = (string) $attrs['url'];
+            $out['alt'] = isset($attrs['alt']) ? (string) $attrs['alt'] : '';
+        }
+    }
+
+    if (!empty($attrs['caption'])) {
+        $out['captionHtml'] = wp_kses_post((string) $attrs['caption']);
+    } elseif (!empty($innerHTML)) {
+
+    }
+
     return $out;
 }
