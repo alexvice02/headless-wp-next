@@ -134,7 +134,7 @@ class Av02Settings
                                         'title' => 'Menus',
                                         'icon' => 'dashicons-menu',
                                         'fields' => [
-                                                ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox', 'tooltip' => 'Увімкніть, щоб надавати меню через REST API.']
+                                                ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox']
                                         ],
                                 ]
                         ],
