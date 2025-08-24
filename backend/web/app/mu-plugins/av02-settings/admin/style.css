@@ -200,6 +200,7 @@
     color: var(--hwn-text);
     border-bottom: 1px solid var(--hwn-border);
     background: var(--hwn-surface-2);
+    border-radius: var(--hwn-radius) var(--hwn-radius) 0 0;
 }
 .hwn-admin .hwn-block-title .dashicons {
     color: var(--hwn-primary);
