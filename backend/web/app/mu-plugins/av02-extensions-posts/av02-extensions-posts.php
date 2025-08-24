@@ -13,6 +13,10 @@ use AV02\Settings\Av02Settings;
 add_action('rest_api_init', function () {
     $included_data = Av02Settings::get_option('api_posts_include');
 
+    if( !$included_data || !is_array($included_data) ){
+        return;
+    }
+
     foreach (['post', 'page'] as $type) {
         if( in_array('featured_image', $included_data) ) {
             register_rest_field($type, 'featured_image', [
