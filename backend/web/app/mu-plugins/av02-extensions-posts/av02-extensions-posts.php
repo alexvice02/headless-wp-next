@@ -84,7 +84,7 @@ add_action('rest_api_init', function () {
         ]);
 
     }
-});
+}, 100);
 
 /**
  * Return featured image payload with common sizes and alt text.
@@ -257,10 +257,27 @@ function av_map_core_image(array $attrs, string $innerHTML): array
         }
     }
 
-    if (!empty($attrs['caption'])) {
-        $out['captionHtml'] = wp_kses_post((string) $attrs['caption']);
-    } elseif (!empty($innerHTML)) {
+    $caption = '';
 
+    if (!empty($attrs['caption'])) {
+        $caption = (string) $attrs['caption'];
+    }
+
+    if ($caption === '' && $innerHTML !== '') {
+        if (preg_match('/<figcaption\b[^>]*>(.*?)<\/figcaption>/is', $innerHTML, $m)) {
+            $caption = trim($m[1]);
+        }
+    }
+
+    if ($caption === '' && $id > 0) {
+        $attachmentCaption = wp_get_attachment_caption($id);
+        if (!empty($attachmentCaption)) {
+            $caption = $attachmentCaption;
+        }
+    }
+
+    if ($caption !== '') {
+        $out['captionHtml'] = wp_kses_post($caption);
     }
 
     return $out;
