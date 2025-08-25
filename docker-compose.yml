@@ -21,6 +21,7 @@ services:
     restart: always
     volumes:
       - ./backend:/var/www/html
+      - ./docker/wordpress/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     working_dir: /var/www/html
     environment:
       DB_HOST: mysql
