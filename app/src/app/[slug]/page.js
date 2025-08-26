@@ -41,7 +41,9 @@ export default async function Page({ params }) {
             <main className={styles.main}>
                 <div className={'container'} style={{ maxWidth: '1000px', margin: '0 auto' }}>
                     <h1 className={styles.pageTitle}>{ page.title }</h1>
-                    <BlockRenderer blocks={page.blocks} />
+                    <div className={styles.pageContent}>
+                        <BlockRenderer blocks={page.blocks} />
+                    </div>
                 </div>
             </main>
         </>
