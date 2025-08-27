@@ -204,7 +204,6 @@ function av_map_blocks(array $blocks, int $depth = 0): array
                 break;
 
             case 'core/group':
-//                $mapped['layout'] = isset($attrs['layout']) ? (string) $attrs['layout'] : null;
             case 'core/columns':
             case 'core/column':
             case 'core/buttons':

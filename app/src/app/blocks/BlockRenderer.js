@@ -96,7 +96,13 @@ function BlockNode({ block }) {
                 <BlockRenderer blocks={children} />
             </div>
         case "core/columns":
+            return <div style={{ display: 'flex', flexWrap: !attrs.isStackedOnMobile ? 'nowrap' : 'wrap', flexDirection: 'row', gap: '10px' }}>
+                <BlockRenderer blocks={children} />
+            </div>
         case "core/column":
+            return <div style={{ flexGrow: 1 }}>
+                <BlockRenderer blocks={children} />
+            </div>
         case "core/buttons":
         case "core/button":
         case "core/list":
