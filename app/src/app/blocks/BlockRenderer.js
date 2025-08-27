@@ -88,6 +88,13 @@ function BlockNode({ block }) {
             );
 
         case "core/group":
+            let layout = attrs.layout || [];
+            if (!layout) {
+                return <div dangerouslySetInnerHTML={{ __html: htmlFallback }}></div>
+            }
+            return <div style={{ display: layout.type, flexWrap: layout.flexWrap, justifyContent: layout.justifyContent, flexDirection: layout.orientation === 'vertical' ? 'column' : 'row'}}>
+                <BlockRenderer blocks={children} />
+            </div>
         case "core/columns":
         case "core/column":
         case "core/buttons":
