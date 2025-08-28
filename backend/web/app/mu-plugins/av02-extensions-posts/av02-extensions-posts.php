@@ -59,6 +59,33 @@ add_action('rest_api_init', function () {
             ]);
         }
 
+        if (in_array('post_format', $included_data, true) && ($type === 'post' || $type === 'page')) {
+            register_rest_field($type, 'post_format', [
+                'get_callback' => function (array $obj) {
+                    $post_id = (int) ($obj['id'] ?? 0);
+                    if (!$post_id) {
+                        return null;
+                    }
+
+                    $slug = get_post_format($post_id);
+                    if ($slug === false) {
+                        $slug = 'standard';
+                    }
+
+                    $label = get_post_format_string($slug);
+                    if (!is_string($label) || $label === '') {
+                        $label = ucfirst($slug);
+                    }
+
+                    return [
+                        'slug' => $slug,
+                        'name' => $label,
+                    ];
+                },
+            ]);
+        }
+
+
         register_rest_field($type, 'g_blocks', [
             'get_callback' => function (array $obj) {
                 $post_id = (int) ($obj['id'] ?? 0);

@@ -116,7 +116,8 @@ class Av02Settings
                                                                                 ],
                                                                                 'excerpt' => 'Excerpt',
                                                                                 'categories' => 'Categories',
-                                                                                'tags' => 'Tags'
+                                                                                'tags' => 'Tags',
+                                                                                'post_format' => 'Post Format'
                                                                         ],
                                                                 ],
                                                         ],
