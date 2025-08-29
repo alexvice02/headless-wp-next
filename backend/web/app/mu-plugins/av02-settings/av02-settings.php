@@ -137,6 +137,13 @@ class Av02Settings
                                         'fields' => [
                                                 ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox']
                                         ],
+                                ],
+                                'seo' => [
+                                        'title' => 'SEO',
+                                        'icon' => 'dashicons-performance',
+                                        'fields' => [
+                                                ['id' => 'api_seo_enabled', 'label' => 'Enable SEO API', 'type' => 'checkbox']
+                                        ]
                                 ]
                         ],
                 ],
