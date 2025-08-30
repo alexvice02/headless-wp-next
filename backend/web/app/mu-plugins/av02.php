@@ -18,6 +18,8 @@ define("AV02_EXTENSIONS_MENUS_ENABLED", class_exists(Av02Settings::class) ? (boo
 define("AV02_EXTENSIONS_POSTS_ENABLED", true);
 define("AV02_EXTENSIONS_ROUTING_ENABLED", true);
 
+require_once MU_PLUGIN_PATH . '/av02-extensions-general/av02-extensions-general.php';
+
 if( AV02_EXTENSIONS_MENUS_ENABLED ) {
     require_once MU_PLUGIN_PATH . '/av02-extensions-menus/av02-extensions-menus.php';
 }
