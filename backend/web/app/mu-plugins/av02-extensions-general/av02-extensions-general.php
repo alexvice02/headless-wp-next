@@ -18,4 +18,16 @@ add_action('rest_api_init', function () {
         },
         'permission_callback' => '__return_true',
     ]);
+
+    register_rest_route('av02/v1', '/theme-settings', [
+        'methods'  => 'GET',
+        'callback' => function () {
+            $palette = wp_get_global_settings( [ 'color', 'palette' ] );
+
+            return [
+                'palette'  => $palette,
+            ];
+        },
+        'permission_callback' => '__return_true',
+    ]);
 });
