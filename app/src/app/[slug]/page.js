@@ -12,7 +12,6 @@ export async function generateStaticParams() {
     }));
 }
 
-
 export default async function Page({ params }) {
     const api = process.env.WP_API_URL;
     const res = await fetch(`${api}/wp/v2/pages?slug=${params.slug}`, {
@@ -39,7 +38,7 @@ export default async function Page({ params }) {
         <>
             <SiteHeader></SiteHeader>
             <main className={styles.main}>
-                <div className={'container'} style={{ maxWidth: '1000px', margin: '0 auto' }}>
+                <div className={styles.container}>
                     <h1 className={styles.pageTitle}>{ page.title }</h1>
                     <div className={styles.pageContent}>
                         <BlockRenderer blocks={page.blocks} />
