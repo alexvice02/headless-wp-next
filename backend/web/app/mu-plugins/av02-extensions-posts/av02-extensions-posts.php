@@ -103,7 +103,7 @@ add_action('rest_api_init', function () {
                 }
 
                 $parsed = parse_blocks($raw);
-                $mapped = av_map_blocks($parsed, 0);
+                $mapped = av02_map_blocks($parsed, 0);
 
                 wp_cache_set($cache_key, $mapped, 'rest_blocks', 10 * MINUTE_IN_SECONDS);
                 return $mapped;
@@ -155,7 +155,7 @@ function get_featured_image(int $postId): ?array
  * @param int $depth
  * @return array
  */
-function av_map_blocks(array $blocks, int $depth = 0): array
+function av02_map_blocks(array $blocks, int $depth = 0): array
 {
     if ($depth > 10) {
         return [];
@@ -179,7 +179,7 @@ function av_map_blocks(array $blocks, int $depth = 0): array
         $mapped = [
             'type'         => $type,
             'attrs'        => $attrs,
-            'children'     => av_map_blocks($innerBlocks, $depth + 1),
+            'children'     => av02_map_blocks($innerBlocks, $depth + 1),
             'htmlFallback' => $htmlFallback,
         ];
 
@@ -243,7 +243,7 @@ function av_map_blocks(array $blocks, int $depth = 0): array
                     $reusable = get_post($refId);
                     if ($reusable && $reusable->post_type === 'wp_block') {
                         $reusable_blocks = parse_blocks($reusable->post_content);
-                        $mapped['children'] = av_map_blocks($reusable_blocks, $depth + 1);
+                        $mapped['children'] = av02_map_blocks($reusable_blocks, $depth + 1);
                     }
                 }
                 break;
