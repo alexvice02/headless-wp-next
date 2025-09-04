@@ -7,8 +7,8 @@ export default async function Navigation({ menuLocation = 'header_menu' }) {
         'location': menuLocation
     });
 
-    const res = await fetch(`${api}/wp-json/av02/v1/menus?${params.toString()}`, {
-        next: { revalidate: 60 },
+    const res = await fetch(`${api}/av02/v1/menus?${params.toString()}`, {
+        next: { revalidate: 3600 },
         method: 'GET'
     });
     let nav = await res.json();

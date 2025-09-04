@@ -15,7 +15,7 @@ export async function generateStaticParams() {
 export default async function Page({ params }) {
     const api = process.env.WP_API_URL;
     const res = await fetch(`${api}/wp/v2/pages?slug=${params.slug}`, {
-        next: { revalidate: 60 },
+        next: { revalidate: 3600 },
     });
 
     if (!res.ok) return notFound();

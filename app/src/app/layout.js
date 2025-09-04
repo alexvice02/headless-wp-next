@@ -27,7 +27,7 @@ const geistMono = Geist_Mono({
 
 export default async function RootLayout({ children }) {
     const res = await fetch(`${process.env.WP_API_URL}/av02/v1/theme-settings`, {
-        next: { revalidate: 60 },
+        next: { revalidate: 3600 },
     })
     const colors = await res.json()
 
