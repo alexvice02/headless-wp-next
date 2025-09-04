@@ -23,7 +23,9 @@ function BlockNode({ block }) {
     const Component = type ? getBlockComponent(type) : null;
 
     if (Component) {
-        return <Component {...block} attrs={attrs} children={children} htmlFallback={htmlFallback} />;
+        return <Component {...block} attrs={attrs} htmlFallback={htmlFallback}>
+            children
+        </Component>;
     }
 
     if (type === "core/embed") {
