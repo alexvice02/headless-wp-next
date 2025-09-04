@@ -1,8 +1,10 @@
+import Image from "next/image";
+
 export default function ImageBlock({url, alt = "", width, height, srcset, sizes, captionHtml, attrs = {}}) {
     if (!url) return null;
     return (
         <figure className={attrs.className || ""}>
-            <img
+            <Image
                 src={url}
                 alt={alt || ""}
                 width={width || undefined}

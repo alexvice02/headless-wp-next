@@ -17,14 +17,14 @@ export default function SiteHeader () {
                 <Link href="#integrations" className={styles.navLink}>Integrations</Link>
                 <Link href="#roadmap" className={styles.navLink}>Roadmap</Link>
                 <Link href="#demo" className={styles.navLink}>Demo</Link>
-                <a
+                <Link
                     href="https://github.com/alexvice02/headless-wp-next"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.cta}
                 >
                     GitHub
-                </a>
+                </Link>
             </nav>
         </header>
     )
