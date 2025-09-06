@@ -135,8 +135,23 @@ class Av02Settings
                                         'title' => 'Menus',
                                         'icon' => 'dashicons-menu',
                                         'fields' => [
-                                                ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox']
                                         ],
+                                        'blocks' => [
+                                            [
+                                                    'title' => 'Menus API',
+                                                    'icon' => '',
+                                                    'fields' => [
+                                                            ['id' => 'api_menu_enabled', 'label' => 'Enable Menus API', 'type' => 'checkbox']
+                                                    ]
+                                            ],
+                                            [
+                                                    'title' => 'Menu Locations',
+                                                    'icon' => '',
+                                                    'fields' => [
+                                                            [ 'id' => 'api_menu_locations', 'label' => 'Menu Locations', 'type' => 'repeater' ]
+                                                    ]
+                                            ]
+                                        ]
                                 ],
                                 'seo' => [
                                         'title' => 'SEO',
