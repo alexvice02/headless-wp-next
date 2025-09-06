@@ -90,12 +90,20 @@ export default function Home() {
                             Basic homepage with navigation and section structure.
                         </li>
                         <li>
-                            <span className={styles.badgeNext}>In Progress</span>
+                            <span className={styles.badgeDone}>Done</span>
                             Custom REST API routing and ACF integration.
                         </li>
                         <li>
+                            <span className={styles.badgeDone}>Done</span>
+                            Gutenberg block rendering
+                        </li>
+                        <li>
                             <span className={styles.badgePlanned}>Planned</span>
-                            Gutenberg block rendering, WooCommerce & WPML support, public demo.
+                            Yoast SEO support
+                        </li>
+                        <li>
+                            <span className={styles.badgePlanned}>Planned</span>
+                            WooCommerce & WPML support
                         </li>
                     </ol>
                 </section>
@@ -103,8 +111,8 @@ export default function Home() {
                 <section id="demo" className={styles.sectionAlt}>
                     <h2 className={styles.sectionTitle}>Demo Showcase</h2>
                     <ul className={styles.todo}>
-                        <li>[ ] Example pages with custom fields and REST API.</li>
-                        <li>[ ] Gutenberg blocks rendered on the frontend.</li>
+                        <li><span>[✓] Example pages with custom fields and REST API.</span></li>
+                        <li><span>[✓] Gutenberg blocks rendered on the frontend.</span></li>
                     </ul>
                 </section>
             </main>

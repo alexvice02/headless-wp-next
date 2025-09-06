@@ -242,6 +242,13 @@
     display: grid;
     gap: 8px;
     color: var(--muted);
+
+    li {
+
+        span {
+            color: var(--ok);
+        }
+    }
 }
 
 .pageTitle {
