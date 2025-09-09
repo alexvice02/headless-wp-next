@@ -1,5 +1,7 @@
 import Link from "next/link";
 import styles from "./page.module.scss";
+import SiteHeader from "@/app/resources/components/header/SiteHeader";
+import Navigation from "@/app/resources/components/header/Navigation";
 
 export const metadata = {
     title: "Home • Headless WP Next"
@@ -8,30 +10,12 @@ export const metadata = {
 export default function Home() {
     return (
         <div className={styles.page}>
-            <header className={styles.header}>
-                <div className={styles.brand}>
-                    <Link href="/" className={styles.brandLink}>
-                        <span className={styles.brandText}>Headless WP Next</span>
-                    </Link>
-                </div>
-
-                <nav className={styles.nav}>
-                    <Link href="#features" className={styles.navLink}>Features</Link>
-                    <Link href="#integrations" className={styles.navLink}>Integrations</Link>
-                    <Link href="#roadmap" className={styles.navLink}>Roadmap</Link>
-                    <Link href="#demo" className={styles.navLink}>Demo</Link>
-                    <a
-                        href="https://github.com/alexvice02/headless-wp-next"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.cta}
-                    >
-                        GitHub
-                    </a>
-                </nav>
-            </header>
+            <SiteHeader />
 
             <main className={styles.main}>
+                <section className={styles.card} style={{marginBottom: 24}}>
+                    <Navigation />
+                </section>
                 <section className={styles.hero}>
                     <h1 className={styles.title}>Headless WordPress + Next.js Starter</h1>
                     <p className={styles.subtitle}>
