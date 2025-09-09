@@ -1,31 +1,28 @@
 import styles from "@/app/page.module.scss";
 import Link from "next/link";
+import Navigation from "@/app/resources/components/header/Navigation";
 
-export default function SiteHeader () {
+export default async function SiteHeader() {
+    const siteSettingsRes = await fetch(
+        process.env.WP_API_URL + "/av02/v1/site-settings",
+        {
+            cache: "force-cache"
+        }
+    );
 
+    const siteSettings = await siteSettingsRes.json();
 
     return (
         <header className={styles.header}>
             <div className={styles.brand}>
                 <Link href="/" className={styles.brandLink}>
-                    <span className={styles.brandText}>Headless WP Next</span>
+          <span className={styles.brandText}>
+            {siteSettings?.name || "Headless WP Next"}
+          </span>
                 </Link>
             </div>
 
-            <nav className={styles.nav}>
-                <Link href="#features" className={styles.navLink}>Features</Link>
-                <Link href="#integrations" className={styles.navLink}>Integrations</Link>
-                <Link href="#roadmap" className={styles.navLink}>Roadmap</Link>
-                <Link href="#demo" className={styles.navLink}>Demo</Link>
-                <Link
-                    href="https://github.com/alexvice02/headless-wp-next"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.cta}
-                >
-                    GitHub
-                </Link>
-            </nav>
+            <Navigation />
         </header>
-    )
+    );
 }
