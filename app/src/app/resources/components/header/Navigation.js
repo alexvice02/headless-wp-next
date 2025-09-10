@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default async function Navigation({ menuLocation = 'header_menu' }) {
+export default async function Navigation({ menuLocation = 'header' }) {
     const api = process.env.WP_API_URL;
 
     let params = new URLSearchParams({
